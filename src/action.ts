@@ -17,7 +17,11 @@ export async function runAction(configurationProvider: ConfigurationProvider): P
 
   const debugManager = DebugManager.getInstance();
 
+  console.log('runAction before currentCommitResolver.IsEmptyRepoAsync()');
+
   if (await currentCommitResolver.IsEmptyRepoAsync()) {
+
+    console.log('runAction inside currentCommitResolver.IsEmptyRepoAsync()');
 
     const versionInfo = new VersionInformation(0, 0, 0, 0, VersionType.None, [], false, false);
     return new VersionResult(
@@ -43,6 +47,8 @@ export async function runAction(configurationProvider: ConfigurationProvider): P
   const commitSet = await commitsProvider.GetCommitsAsync(lastRelease.hash, currentCommit);
   const classification = await versionClassifier.ClassifyAsync(lastRelease, commitSet);
 
+  console.log('runAction after all await. currentCommit: ' + currentCommit + ', lastRelease: ' + lastRelease + ', commitSet: ' + commitSet + ', classification: ' + classification);
+
   const { isTagged } = lastRelease;
   const { major, minor, patch, increment, type, changed } = classification;
 
@@ -62,6 +68,8 @@ export async function runAction(configurationProvider: ConfigurationProvider): P
   const authors = Object.values(allAuthors)
     .map((u: any) => new UserInfo(u.n, u.e, u.c))
     .sort((a: UserInfo, b: UserInfo) => b.commits - a.commits);
+
+  console.log('runAction before return new VersionResult with currentCommit: ' + currentCommit + ', lastRelease: ' + lastRelease + ', authors: ' + authors);
 
   return new VersionResult(
     versionInfo.major,
