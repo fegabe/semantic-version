@@ -94,6 +94,6 @@ export async function run() {
   setOutput(result);
 }
 
-console.log('Running fegabe branch');
+console.log('10- Running fegabe branch');
 
 run();

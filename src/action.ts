@@ -7,6 +7,8 @@ import { DebugManager } from './DebugManager';
 
 export async function runAction(configurationProvider: ConfigurationProvider): Promise<VersionResult> {
 
+  console.log('runAction start');
+
   const currentCommitResolver = configurationProvider.GetCurrentCommitResolver();
   const lastReleaseResolver = configurationProvider.GetLastReleaseResolver();
   const commitsProvider = configurationProvider.GetCommitsProvider();
