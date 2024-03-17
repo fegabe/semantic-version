@@ -305,6 +305,7 @@ const VersionInformation_1 = __nccwpck_require__(5686);
 const DebugManager_1 = __nccwpck_require__(1823);
 function runAction(configurationProvider) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log('runAction start');
         const currentCommitResolver = configurationProvider.GetCurrentCommitResolver();
         const lastReleaseResolver = configurationProvider.GetLastReleaseResolver();
         const commitsProvider = configurationProvider.GetCommitsProvider();
@@ -313,7 +314,9 @@ function runAction(configurationProvider) {
         const tagFormatter = configurationProvider.GetTagFormatter(yield currentCommitResolver.ResolveBranchNameAsync());
         const userFormatter = configurationProvider.GetUserFormatter();
         const debugManager = DebugManager_1.DebugManager.getInstance();
+        console.log('runAction before currentCommitResolver.IsEmptyRepoAsync()');
         if (yield currentCommitResolver.IsEmptyRepoAsync()) {
+            console.log('runAction inside currentCommitResolver.IsEmptyRepoAsync()');
             const versionInfo = new VersionInformation_1.VersionInformation(0, 0, 0, 0, VersionType_1.VersionType.None, [], false, false);
             return new VersionResult_1.VersionResult(versionInfo.major, versionInfo.minor, versionInfo.patch, versionInfo.increment, versionInfo.type, versionFormatter.Format(versionInfo), tagFormatter.Format(versionInfo), versionInfo.changed, versionInfo.isTagged, userFormatter.Format('author', []), '', '', tagFormatter.Parse(tagFormatter.Format(versionInfo)).join('.'), debugManager.getDebugOutput(true));
         }
@@ -321,6 +324,7 @@ function runAction(configurationProvider) {
         const lastRelease = yield lastReleaseResolver.ResolveAsync(currentCommit, tagFormatter);
         const commitSet = yield commitsProvider.GetCommitsAsync(lastRelease.hash, currentCommit);
         const classification = yield versionClassifier.ClassifyAsync(lastRelease, commitSet);
+        console.log('runAction after all await. currentCommit: ' + currentCommit + ', lastRelease: ' + lastRelease + ', commitSet: ' + commitSet + ', classification: ' + classification);
         const { isTagged } = lastRelease;
         const { major, minor, patch, increment, type, changed } = classification;
         // At this point all necessary data has been pulled from the database, create
@@ -337,6 +341,7 @@ function runAction(configurationProvider) {
         const authors = Object.values(allAuthors)
             .map((u) => new UserInfo_1.UserInfo(u.n, u.e, u.c))
             .sort((a, b) => b.commits - a.commits);
+        console.log('runAction before return new VersionResult with currentCommit: ' + currentCommit + ', lastRelease: ' + lastRelease + ', authors: ' + authors);
         return new VersionResult_1.VersionResult(versionInfo.major, versionInfo.minor, versionInfo.patch, versionInfo.increment, versionInfo.type, versionFormatter.Format(versionInfo), tagFormatter.Format(versionInfo), versionInfo.changed, versionInfo.isTagged, userFormatter.Format('author', authors), currentCommit, lastRelease.hash, `${lastRelease.major}.${lastRelease.minor}.${lastRelease.patch}`, debugManager.getDebugOutput());
     });
 }
@@ -619,7 +624,7 @@ function setOutput(versionResult) {
     const { major, minor, patch, increment, versionType, formattedVersion, versionTag, changed, isTagged, authors, currentCommit, previousCommit, previousVersion, debugOutput } = versionResult;
     const repository = process.env.GITHUB_REPOSITORY;
     if (!changed) {
-        core.info('5- No changes detected for this commit');
+        core.info('6- No changes detected for this commit');
     }
     core.info(`Version is ${formattedVersion}`);
     if (repository !== undefined) {
@@ -678,7 +683,27 @@ function run() {
             enablePrereleaseMode: toBool(core.getInput('enable_prerelease_mode')),
             bumpEachCommitPatchPattern: core.getInput('bump_each_commit_patch_pattern'),
             debug: toBool(core.getInput('debug')),
-            replay: ''
+            replay: '',
+            // userFormatType: "json",
+            // tagPrefix: "v",
+            // versionFormat: "v${major}.${minor}.${patch}-${increment}",
+            // debug: false,
+            // branch: "HEAD",
+            // useBranches: false,
+            // versionFromBranch: false,
+            // majorPattern: "(MAJOR)",
+            // minorPattern: "(MINOR)",
+            // bumpEachCommit: false,
+            // searchCommitBody: false,
+            // enablePrereleaseMode: false,
+            // changePath: "",
+            // branch: "feature/fix-fmod-library-missing",
+            // useBranches: true,
+            // enablePrereleaseMode: true,
+            // versionFromBranch: true,
+            // searchCommitBody: true,
+            // bumpEachCommit: true,
+            // versionFormat: "v${major}.${minor}.${patch}",
         };
         if (config.useBranches) {
             core.warning(`The 'use_branches' input option is deprecated, please see the documentation for more information on how to use branches`);
@@ -690,13 +715,15 @@ function run() {
         if (core.getInput('short_tags') !== '') {
             core.warning(`The 'short_tags' input option is no longer supported`);
         }
+        // print format 
         const configurationProvider = new ConfigurationProvider_1.ConfigurationProvider(config);
+        // process.chdir("/Users/fegabe/m/projects/lefese/rematch/matchdeath");
         const result = yield (0, action_1.runAction)(configurationProvider);
         setOutput(result);
     });
 }
 exports.run = run;
-console.log('Running fegabe branch');
+console.log('10- Running fegabe branch');
 run();
 
 
