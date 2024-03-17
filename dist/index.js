@@ -715,9 +715,7 @@ function run() {
         if (core.getInput('short_tags') !== '') {
             core.warning(`The 'short_tags' input option is no longer supported`);
         }
-        // print format 
         const configurationProvider = new ConfigurationProvider_1.ConfigurationProvider(config);
-        // process.chdir("/Users/fegabe/m/projects/lefese/rematch/matchdeath");
         const result = yield (0, action_1.runAction)(configurationProvider);
         setOutput(result);
     });
@@ -1007,6 +1005,7 @@ class DefaultCurrentCommitResolver {
     IsEmptyRepoAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             let lastCommitAll = (yield (0, CommandRunner_1.cmd)('git', 'rev-list', '-n1', '--all')).trim();
+            console.log('IsEmptyRepoAsync. lastCommitAll: ' + lastCommitAll);
             return lastCommitAll === '';
         });
     }

@@ -20,6 +20,7 @@ export class DefaultCurrentCommitResolver implements CurrentCommitResolver {
 
     public async IsEmptyRepoAsync(): Promise<boolean> {
         let lastCommitAll = (await cmd('git', 'rev-list', '-n1', '--all')).trim();
+        console.log('IsEmptyRepoAsync. lastCommitAll: ' + lastCommitAll);
         return lastCommitAll === '';
     }
 
