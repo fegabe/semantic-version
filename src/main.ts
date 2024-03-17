@@ -11,7 +11,7 @@ function setOutput(versionResult: VersionResult) {
   const repository = process.env.GITHUB_REPOSITORY;
 
   if (!changed) {
-    core.info('!! No changes detected for this commit');
+    core.info('1- No changes detected for this commit');
   }
 
   core.info(`Version is ${formattedVersion}`);
